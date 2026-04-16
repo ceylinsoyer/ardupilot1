@@ -182,9 +182,9 @@ case SUB_FRAME_CUSTOM:
     add_motor_raw_6dof(AP_MOTORS_MOT_1,
                        0.0f,   // roll
                        0.0f,   // pitch
-                       0.0f,   // yaw
+                       1.0f,   // yaw
                        0.0f,   // throttle
-                       0.0f,   // forward
+                       1.0f,   // forward
                       -1.0f,   // lateral
                        1);     // test order
 
@@ -192,9 +192,9 @@ case SUB_FRAME_CUSTOM:
     add_motor_raw_6dof(AP_MOTORS_MOT_2,
                        0.0f,
                        0.0f,
+                       -1.0f,
                        0.0f,
-                       0.0f,
-                       0.0f,
+                       1.0f,
                        1.0f,
                        2);
 
