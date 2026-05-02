@@ -392,11 +392,25 @@ void AP_Motors6DOF::output_armed_stabilizing()
         }
 
         // Calculate final output for each motor
-        for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
-            if (motor_enabled[i]) {
-                _thrust_rpyt_out[i] = constrain_float(_motor_reverse[i]*(rpy_out[i] + linear_out[i]),-1.0f,1.0f);
-            }
+      // Calculate raw output for each motor
+float max_thrust = 1.0f;
+
+for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
+    if (motor_enabled[i]) {
+        _thrust_rpyt_out[i] = _motor_reverse[i] * (rpy_out[i] + linear_out[i]);
+
+        if (fabsf(_thrust_rpyt_out[i]) > max_thrust) {
+            max_thrust = fabsf(_thrust_rpyt_out[i]);
         }
+    }
+}
+
+// Normalize motor outputs if any motor exceeds the allowed range
+for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
+    if (motor_enabled[i]) {
+        _thrust_rpyt_out[i] = constrain_float(_thrust_rpyt_out[i] / max_thrust, -1.0f, 1.0f);
+    }
+}
     }
 
 #if AP_BATTERY_ENABLED
