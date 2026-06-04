@@ -174,7 +174,6 @@ void AP_Motors6DOF::setup_motors(motor_frame_class frame_class, motor_frame_type
         add_motor_raw_6dof(AP_MOTORS_MOT_5,     1.0f,           0,              0,              -1.0f,              0,                  0,              5);
         add_motor_raw_6dof(AP_MOTORS_MOT_6,     -1.0f,          0,              0,              -1.0f,              0,                  0,              6);
         break;
-
 case SUB_FRAME_CUSTOM:
     _frame_class_string = "CUSTOM";
 
@@ -182,9 +181,9 @@ case SUB_FRAME_CUSTOM:
     add_motor_raw_6dof(AP_MOTORS_MOT_1,
                        0.0f,   // roll
                        0.0f,   // pitch
-                       1.0f,   // yaw
+                       0.0f,   // yaw
                        0.0f,   // throttle
-                       1.0f,   // forward
+                       0.0f,   // forward
                       -1.0f,   // lateral
                        1);     // test order
 
@@ -192,9 +191,9 @@ case SUB_FRAME_CUSTOM:
     add_motor_raw_6dof(AP_MOTORS_MOT_2,
                        0.0f,
                        0.0f,
-                       -1.0f,
                        0.0f,
-                       1.0f,
+                       0.0f,
+                       0.0f,
                        1.0f,
                        2);
 
@@ -392,25 +391,11 @@ void AP_Motors6DOF::output_armed_stabilizing()
         }
 
         // Calculate final output for each motor
-      // Calculate raw output for each motor
-float max_thrust = 1.0f;
-
-for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
-    if (motor_enabled[i]) {
-        _thrust_rpyt_out[i] = _motor_reverse[i] * (rpy_out[i] + linear_out[i]);
-
-        if (fabsf(_thrust_rpyt_out[i]) > max_thrust) {
-            max_thrust = fabsf(_thrust_rpyt_out[i]);
+        for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
+            if (motor_enabled[i]) {
+                _thrust_rpyt_out[i] = constrain_float(_motor_reverse[i]*(rpy_out[i] + linear_out[i]),-1.0f,1.0f);
+            }
         }
-    }
-}
-
-// Normalize motor outputs if any motor exceeds the allowed range
-for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
-    if (motor_enabled[i]) {
-        _thrust_rpyt_out[i] = constrain_float(_thrust_rpyt_out[i] / max_thrust, -1.0f, 1.0f);
-    }
-}
     }
 
 #if AP_BATTERY_ENABLED
